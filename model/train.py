@@ -108,26 +108,27 @@ def train(input_variable, lengths, target_variable, mask, max_target_len, encode
 # ~~~~~~~~~~~~~~~~~~~
 #
 
-def trainIters(model_name, voc, pairs, encoder, decoder, encoder_optimizer, decoder_optimizer, embedding,
-               encoder_n_layers, decoder_n_layers, save_dir, n_iteration, batch_size, print_every, save_every, clip,
-               corpus_name, loadFilename, checkpoint, epoch):
+def train_iters(voc, pairs, encoder, decoder, encoder_optimizer, decoder_optimizer, embedding, save_dir, checkpoint,
+                epoch):
+    # Ensure dropout layers are in train mode
+    encoder.train()
+    decoder.train()
     # Load batches for each iteration
     random.shuffle(pairs)
-    batches = [pairs[i:i + batch_size] for i in range(0, len(pairs), batch_size)]
+    batches = [pairs[i:i + config.batch_size] for i in range(0, len(pairs), config.batch_size)]
 
     training_batches = [prepare_data.batch2TrainData(voc, batches[i])
-                        for i in range(n_iteration)]
+                        for i in range(len(batches))]
 
     # Initializations
-    print('Initializing ...')
     start_iteration = 1
     print_loss = 0
-    if loadFilename:
+    epoch_loss = 0
+    if config.loadFilename:
         start_iteration = checkpoint['iteration'] + 1
 
     # Training loop
-    print("Training...")
-    for iteration in range(start_iteration, n_iteration + 1):
+    for iteration in range(start_iteration, config.n_iteration + 1):
         s = time.time()
 
         training_batch = training_batches[iteration - 1]
@@ -136,25 +137,23 @@ def trainIters(model_name, voc, pairs, encoder, decoder, encoder_optimizer, deco
 
         # Run a training iteration with batch
         loss = train(input_variable, lengths, target_variable, mask, max_target_len, encoder,
-                     decoder, embedding, encoder_optimizer, decoder_optimizer, batch_size, clip)
+                     decoder, embedding, encoder_optimizer, decoder_optimizer, config.batch_size, config.clip)
         print_loss += loss
-
+        epoch_loss += loss
         config.train_time += time.time() - s
 
         # Print progress
-        if iteration % print_every == 0:
-            print_loss_avg = print_loss / print_every
-            print("Epoch: {} Iteration: {}; Percent complete: {:.1f}%; Average loss: {:.4f}".format(epoch, iteration,
-                                                                                                    iteration / n_iteration * 100,
-                                                                                                    print_loss_avg))
+        if iteration % config.print_every == 0:
+            print_loss_avg = print_loss / config.print_every
+            print("Epoch: {} Iteration: {}; Percent complete: {:.1f}%; Average loss: {:.4f}; Train time: {}"
+                  .format(epoch, iteration, iteration / config.n_iteration * 100, print_loss_avg, config.train_time))
+
             print_loss = 0
-            print(f'Train time: {config.train_time}, Encoder time: {config.encoder_time}, '
-                  f'Decoder time: {config.decoder_time}, Backward time: {config.backward_time}')
 
         # Save checkpoint
-        if (iteration % save_every == 0):
-            directory = os.path.join(save_dir, model_name, corpus_name,
-                                     '{}-{}_{}'.format(encoder_n_layers, decoder_n_layers, config.hidden_size))
+        if iteration % config.save_every == 0:
+            directory = os.path.join(save_dir, config.model_name, config.corpus_name,
+                                     '{}-{}_{}'.format(config.encoder_n_layers, config.decoder_n_layers, config.hidden_size))
             if not os.path.exists(directory):
                 os.makedirs(directory)
             torch.save({
@@ -167,4 +166,6 @@ def trainIters(model_name, voc, pairs, encoder, decoder, encoder_optimizer, deco
                 'loss': loss,
                 'voc_dict': voc.__dict__,
                 'embedding': embedding.state_dict()
-            }, os.path.join(directory, '{}_{}.tar'.format(iteration, 'checkpoint')))
+            }, os.path.join(directory, '{}_{}_{}.tar'.format(epoch, iteration, 'checkpoint')))
+
+    return epoch_loss / config.n_iteration

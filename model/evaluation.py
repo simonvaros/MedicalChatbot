@@ -4,8 +4,6 @@ import torch.nn as nn
 import operator
 import prepare_data
 import torch.nn.functional as F
-
-
 from queue import PriorityQueue
 
 
@@ -267,3 +265,63 @@ def generateAnswer(question, encoder, decoder, searcher, voc):
     except KeyError:
         return "Error: Encountered unknown word."
 
+def validate(input_variable, lengths, target_variable, mask, max_target_len, encoder, decoder, batch_size):
+    # Set device options
+    input_variable = input_variable.to(config.device)
+    target_variable = target_variable.to(config.device)
+    mask = mask.to(config.device)
+    # Lengths for rnn packing should always be on the cpu
+    lengths = lengths.to("cpu")
+
+    # Initialize variables
+    loss = 0
+    print_losses = []
+    n_totals = 0
+
+    encoder_outputs, encoder_hidden = encoder(input_variable, lengths)
+
+    # Create initial decoder input (start with SOS tokens for each sentence)
+    decoder_input = torch.LongTensor([[config.SOS_token for _ in range(batch_size)]])
+    decoder_input = decoder_input.to(config.device)
+
+    # Set initial decoder hidden state to the encoder's final hidden state
+    decoder_hidden = encoder_hidden[:decoder.n_layers]
+
+    with torch.no_grad():
+        for t in range(max_target_len):
+            decoder_output, decoder_hidden = decoder(
+                decoder_input, decoder_hidden, encoder_outputs
+            )
+
+            # No teacher forcing: next input is decoder's own current output
+            decoder_input = target_variable[t].view(1, -1)
+
+            # Calculate and accumulate loss
+            mask_loss, nTotal = train.maskNLLLoss(decoder_output, target_variable[t], mask[t])
+            loss += mask_loss
+            print_losses.append(mask_loss.item() * nTotal)
+            n_totals += nTotal
+
+    return sum(print_losses) / n_totals
+
+
+def validate_batches(voc, val_pairs, encoder, decoder):
+    encoder.eval()
+    decoder.eval()
+
+    random.shuffle(val_pairs)
+    batches = [val_pairs[i:i + config.batch_size] for i in range(0, len(val_pairs), config.batch_size)]
+
+    val_batches = [prepare_data.batch2TrainData(voc, batches[i])
+                   for i in range(len(batches))]
+    val_loss = 0
+
+    for iteration in range(1, config.n_val_iteration + 1):
+        val_batch = val_batches[iteration - 1]
+        input_variable, lengths, target_variable, mask, max_target_len = val_batch
+
+        loss = validate(input_variable, lengths, target_variable, mask, max_target_len, encoder,
+                     decoder, config.batch_size)
+        val_loss += loss
+
+    return val_loss / config.n_val_iteration

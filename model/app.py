@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-Chatbot Tutorial
-================
-**Author:** `Matthew Inkawhich <https://github.com/MatthewInkawhich>`_
-"""
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -21,34 +15,21 @@ import config
 import train
 import prepare_data
 import evaluation
+from evaluation import BeamSearchDecoder, GreedySearchDecoder, SamplingDecoder
+import flask
+from flask import request
+from flask_cors import CORS, cross_origin
 import time
 
-from evaluation import BeamSearchDecoder, GreedySearchDecoder
 
 # Load/Assemble voc and pairs
 save_dir = os.path.join("data", "save")
 voc, pairs = prepare_data.loadPrepareData()
+
 # Print some pairs to validate
 print("\npairs:")
 for pair in pairs[:10]:
     print(pair)
-
-
-
-# Example for validation
-small_batch_size = 5
-batches = prepare_data.batch2TrainData(voc, [random.choice(pairs) for _ in range(small_batch_size)])
-input_variable, lengths, target_variable, mask, max_target_len = batches
-
-print("input_variable:", input_variable)
-print("lengths:", lengths)
-print("target_variable:", target_variable)
-print("mask:", mask)
-print("max_target_len:", max_target_len)
-
-#loadFilename = os.path.join(save_dir, model_name, corpus_name,
-#                            '{}-{}_{}'.format(encoder_n_layers, decoder_n_layers, hidden_size),
-#                            '{}_checkpoint.tar'.format(checkpoint_iter))
 
 
 # Load model if a loadFilename is provided
@@ -83,35 +64,26 @@ decoder = decoder.to(config.device)
 print('Models built and ready to go!')
 
 
-######################################################################
-# Run Training
-# ~~~~~~~~~~~~
-#
+if config.training:
+    # Initialize optimizers
+    print('Building optimizers ...')
+    encoder_optimizer = optim.Adam(encoder.parameters(), lr=config.learning_rate)
+    decoder_optimizer = optim.Adam(decoder.parameters(), lr=config.learning_rate * config.decoder_learning_ratio)
+    if config.loadFilename:
+        encoder_optimizer.load_state_dict(encoder_optimizer_sd)
+        decoder_optimizer.load_state_dict(decoder_optimizer_sd)
 
-# Configure training/optimization
+    # If you have cuda, configure cuda to call
+    for state in encoder_optimizer.state.values():
+        for k, v in state.items():
+            if isinstance(v, torch.Tensor):
+                state[k] = v.cuda()
 
-
-
-
-# Initialize optimizers
-print('Building optimizers ...')
-encoder_optimizer = optim.Adam(encoder.parameters(), lr=config.learning_rate)
-decoder_optimizer = optim.Adam(decoder.parameters(), lr=config.learning_rate * config.decoder_learning_ratio)
-if config.loadFilename:
-    encoder_optimizer.load_state_dict(encoder_optimizer_sd)
-    decoder_optimizer.load_state_dict(decoder_optimizer_sd)
-
-# If you have cuda, configure cuda to call
-for state in encoder_optimizer.state.values():
-    for k, v in state.items():
-        if isinstance(v, torch.Tensor):
-            state[k] = v.cuda()
-
-for state in decoder_optimizer.state.values():
-    for k, v in state.items():
-        if isinstance(v, torch.Tensor):
-            state[k] = v.cuda()
-
+    for state in decoder_optimizer.state.values():
+        for k, v in state.items():
+            if isinstance(v, torch.Tensor):
+                state[k] = v.cuda()
+        
 random.shuffle(pairs)
 split_val = int(len(pairs) * 0.8)
 train_pairs = pairs[:split_val]
@@ -140,19 +112,41 @@ for epoch in range(1, config.n_epoch + 1):
     total_time += epoch_time
     print(f"Total time elapsed: {total_time}")
 
-######################################################################
-# Run Evaluation
-# ~~~~~~~~~~~~~~
-#
-# To chat with your model, run the following block.
-#
 
-# Set dropout layers to eval mode
-# encoder.eval()
-# decoder.eval()
-#
-# # Initialize search module
-# searcher = GreedySearchDecoder(encoder, decoder)
-# searcher2 = BeamSearchDecoder(encoder, decoder)
-#
-# evaluation.evaluateInput(encoder, decoder, searcher, voc, searcher2=searcher2)
+if config.evaluation:
+    encoder.eval()
+    decoder.eval()
+
+    # Initialize search module
+    searcher = GreedySearchDecoder(encoder, decoder)
+    searcher2 = BeamSearchDecoder(encoder, decoder)
+    searcher3 = SamplingDecoder(encoder, decoder)
+
+    evaluation.evaluateInput(encoder, decoder, searcher, voc, searcher2=searcher2, searcher3=searcher3)
+
+if config.api:
+    app = flask.Flask(__name__)
+    cors = CORS(app)
+    app.config['CORS_HEADERS'] = 'Content-Type'
+
+    @app.route('/', methods=['GET'])
+    @cross_origin()
+    def get_answer():
+        if 'question' in request.args:
+            question = request.args['question']
+        else:
+            return "No question provided"
+
+        decoder_gen = searcher
+
+        if 'decoder' in request.args:
+            decoder_type = request.args['decoder']
+
+            if decoder_type == 'beamsearch':
+                decoder_gen = searcher2
+            if decoder_type == 'sampling':
+                decoder_gen = searcher3
+
+        answer = evaluation.generateAnswer(question, encoder, decoder, decoder_gen, voc)
+
+        return answer
