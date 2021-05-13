@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Medical chatbot</title>
+  </head>
+  <body style="background: ghostwhite">
+    <script>
+      const integrationScriptUrl = "./integration-script.js";
+
+      var script = document.createElement("script");
+      script.src = integrationScriptUrl;
+      document.getElementsByTagName("body")[0].appendChild(script);
+    </script>
+  </body>
+</html>
