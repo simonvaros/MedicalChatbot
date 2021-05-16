@@ -1,0 +1,205 @@
+Read 2032943 sentence pairs
+Counted words: 31581
+
+Training dataset size: 1626354, Validation dataset size: 406589
+Initial validation loss: 10.3588
+Epoch: 1, Train loss: 4.6340, Validation loss: 4.0701, Duration: 1779.065045595169
+Total time elapsed: 1779.065045595169
+Epoch: 2, Train loss: 3.9509, Validation loss: 3.8202, Duration: 1783.9948649406433
+Total time elapsed: 3563.0599105358124
+Epoch: 3, Train loss: 3.7865, Validation loss: 3.7366, Duration: 1796.4678447246552
+Total time elapsed: 5359.5277552604675
+Epoch: 4, Train loss: 3.6890, Validation loss: 3.6869, Duration: 1793.312143087387
+Total time elapsed: 7152.839898347855
+Epoch: 5, Train loss: 3.6258, Validation loss: 3.6614, Duration: 1785.495231628418
+Total time elapsed: 8938.335129976273
+Epoch: 6, Train loss: 3.5805, Validation loss: 3.6159, Duration: 1797.3586950302124
+Total time elapsed: 10735.693825006485
+Epoch: 7, Train loss: 3.5472, Validation loss: 3.6205, Duration: 1800.7385954856873
+Total time elapsed: 12536.432420492172
+Epoch: 8, Train loss: 3.5161, Validation loss: 3.6067, Duration: 1794.061015367508
+Total time elapsed: 14330.49343585968
+Epoch: 9, Train loss: 3.4855, Validation loss: 3.6005, Duration: 1783.9651317596436
+Total time elapsed: 16114.458567619324
+Epoch: 10, Train loss: 3.4627, Validation loss: 3.5778, Duration: 1784.0382208824158
+Total time elapsed: 17898.49678850174
+Epoch: 11, Train loss: 3.4408, Validation loss: 3.6293, Duration: 1782.0976355075836
+Total time elapsed: 19680.594424009323
+Epoch: 12, Train loss: 3.4214, Validation loss: 3.5975, Duration: 1782.1226162910461
+Total time elapsed: 21462.71704030037
+Epoch: 13, Train loss: 3.4038, Validation loss: 3.5903, Duration: 1782.2500360012054
+Total time elapsed: 23244.967076301575
+Epoch: 14, Train loss: 3.3883, Validation loss: 3.5927, Duration: 1780.960346698761
+Total time elapsed: 25025.927423000336
+Epoch: 15, Train loss: 3.3708, Validation loss: 3.6042, Duration: 1789.3685367107391
+Total time elapsed: 26815.295959711075
+Epoch: 16, Train loss: 3.3570, Validation loss: 3.5837, Duration: 1801.0063495635986
+Total time elapsed: 28616.302309274673
+Epoch: 17, Train loss: 3.3414, Validation loss: 3.5844, Duration: 1793.0828065872192
+Total time elapsed: 30409.385115861893
+Epoch: 18, Train loss: 3.3250, Validation loss: 3.5910, Duration: 1782.126472711563
+Total time elapsed: 32191.511588573456
+Epoch: 19, Train loss: 3.3147, Validation loss: 3.6059, Duration: 1781.6341087818146
+Total time elapsed: 33973.14569735527
+Epoch: 20, Train loss: 3.3027, Validation loss: 3.6059, Duration: 1780.3550827503204
+Total time elapsed: 35753.50078010559
+Epoch: 21, Train loss: 3.2903, Validation loss: 3.6339, Duration: 1782.0912992954254
+Total time elapsed: 37535.592079401016
+Epoch: 22, Train loss: 3.2777, Validation loss: 3.6297, Duration: 1784.1509275436401
+Total time elapsed: 39319.74300694466
+Epoch: 23, Train loss: 3.2687, Validation loss: 3.6191, Duration: 1781.3073191642761
+Total time elapsed: 41101.05032610893
+Epoch: 24, Train loss: 3.2571, Validation loss: 3.6249, Duration: 1780.3420622348785
+Total time elapsed: 42881.39238834381
+Epoch: 25, Train loss: 3.2454, Validation loss: 3.6367, Duration: 1780.2852892875671
+Total time elapsed: 44661.67767763138
+Epoch: 26, Train loss: 3.2362, Validation loss: 3.6283, Duration: 1782.601608991623
+Total time elapsed: 46444.279286623
+Epoch: 27, Train loss: 3.2258, Validation loss: 3.6570, Duration: 1784.7144138813019
+Total time elapsed: 48228.9937005043
+Epoch: 28, Train loss: 3.2195, Validation loss: 3.6547, Duration: 1780.1750049591064
+Total time elapsed: 50009.16870546341
+Epoch: 29, Train loss: 3.2077, Validation loss: 3.6507, Duration: 1779.6337447166443
+Total time elapsed: 51788.802450180054
+Epoch: 30, Train loss: 3.1996, Validation loss: 3.6653, Duration: 1780.8888356685638
+Total time elapsed: 53569.69128584862
+Epoch: 31, Train loss: 3.1923, Validation loss: 3.6742, Duration: 1778.2917728424072
+Total time elapsed: 55347.983058691025
+Epoch: 32, Train loss: 3.1835, Validation loss: 3.6794, Duration: 1778.1277115345001
+Total time elapsed: 57126.110770225525
+Epoch: 33, Train loss: 3.1744, Validation loss: 3.6739, Duration: 1782.7360970973969
+Total time elapsed: 58908.84686732292
+Epoch: 34, Train loss: 3.1663, Validation loss: 3.6895, Duration: 1786.2388608455658
+Total time elapsed: 60695.08572816849
+Epoch: 35, Train loss: 3.1587, Validation loss: 3.6837, Duration: 1799.085824251175
+Total time elapsed: 62494.17155241966
+Epoch: 36, Train loss: 3.1510, Validation loss: 3.6958, Duration: 1796.0643904209137
+Total time elapsed: 64290.235942840576
+Epoch: 37, Train loss: 3.1447, Validation loss: 3.7001, Duration: 1780.8479993343353
+Total time elapsed: 66071.08394217491
+Epoch: 38, Train loss: 3.1370, Validation loss: 3.7215, Duration: 1780.726933479309
+Total time elapsed: 67851.81087565422
+Epoch: 39, Train loss: 3.1313, Validation loss: 3.7228, Duration: 1794.4733061790466
+Total time elapsed: 69646.28418183327
+Epoch: 40, Train loss: 3.1228, Validation loss: 3.7237, Duration: 1797.9117496013641
+Total time elapsed: 71444.19593143463
+Epoch: 41, Train loss: 3.1179, Validation loss: 3.7273, Duration: 1800.9265813827515
+Total time elapsed: 73245.12251281738
+Epoch: 42, Train loss: 3.1119, Validation loss: 3.7336, Duration: 1791.8378927707672
+Total time elapsed: 75036.96040558815
+Epoch: 43, Train loss: 3.1061, Validation loss: 3.7395, Duration: 1784.6171884536743
+Total time elapsed: 76821.57759404182
+Epoch: 44, Train loss: 3.1008, Validation loss: 3.7389, Duration: 1789.745041847229
+Total time elapsed: 78611.32263588905
+Epoch: 45, Train loss: 3.0930, Validation loss: 3.7439, Duration: 1793.5874502658844
+Total time elapsed: 80404.91008615494
+Epoch: 46, Train loss: 3.0873, Validation loss: 3.7546, Duration: 1796.7662560939789
+Total time elapsed: 82201.67634224892
+Epoch: 47, Train loss: 3.0826, Validation loss: 3.7605, Duration: 1791.2282273769379
+Total time elapsed: 83992.90456962585
+Epoch: 48, Train loss: 3.0789, Validation loss: 3.7628, Duration: 1799.2723667621613
+Total time elapsed: 85792.17693638802
+Epoch: 49, Train loss: 3.0745, Validation loss: 3.7742, Duration: 1798.9997634887695
+Total time elapsed: 87591.17669987679
+Epoch: 50, Train loss: 3.0692, Validation loss: 3.7714, Duration: 1813.774828672409
+Total time elapsed: 89404.9515285492
+Epoch: 51, Train loss: 3.0631, Validation loss: 3.7830, Duration: 1812.5641026496887
+Total time elapsed: 91217.51563119888
+Epoch: 52, Train loss: 3.0586, Validation loss: 3.7824, Duration: 1821.0336101055145
+Total time elapsed: 93038.5492413044
+Epoch: 53, Train loss: 3.0542, Validation loss: 3.7907, Duration: 1830.283565044403
+Total time elapsed: 94868.8328063488
+Epoch: 54, Train loss: 3.0484, Validation loss: 3.8001, Duration: 1811.6194279193878
+Total time elapsed: 96680.45223426819
+Epoch: 55, Train loss: 3.0444, Validation loss: 3.7984, Duration: 1803.0919790267944
+Total time elapsed: 98483.54421329498
+Epoch: 56, Train loss: 3.0401, Validation loss: 3.8030, Duration: 1800.4123578071594
+Total time elapsed: 100283.95657110214
+Epoch: 57, Train loss: 3.0367, Validation loss: 3.8118, Duration: 1810.9458870887756
+Total time elapsed: 102094.90245819092
+Epoch: 58, Train loss: 3.0335, Validation loss: 3.8215, Duration: 1828.9534785747528
+Total time elapsed: 103923.85593676567
+Epoch: 59, Train loss: 3.0299, Validation loss: 3.8207, Duration: 1829.3631122112274
+Total time elapsed: 105753.2190489769
+Epoch: 60, Train loss: 3.0254, Validation loss: 3.8360, Duration: 1815.8869099617004
+Total time elapsed: 107569.1059589386
+Epoch: 61, Train loss: 3.0221, Validation loss: 3.8373, Duration: 1819.6637675762177
+Total time elapsed: 109388.76972651482
+Epoch: 62, Train loss: 3.0182, Validation loss: 3.8386, Duration: 1808.49813747406
+Total time elapsed: 111197.26786398888
+Epoch: 63, Train loss: 3.0154, Validation loss: 3.8513, Duration: 1824.4522352218628
+Total time elapsed: 113021.72009921074
+Epoch: 64, Train loss: 3.0125, Validation loss: 3.8537, Duration: 1821.27782869339
+Total time elapsed: 114842.99792790413
+Epoch: 65, Train loss: 3.0106, Validation loss: 3.8757, Duration: 1804.6799874305725
+Total time elapsed: 116647.6779153347
+Epoch: 66, Train loss: 3.0082, Validation loss: 3.8641, Duration: 1782.869487285614
+Total time elapsed: 118430.54740262032
+Epoch: 67, Train loss: 3.0089, Validation loss: 3.8849, Duration: 1778.518785238266
+Total time elapsed: 120209.06618785858
+Epoch: 68, Train loss: 3.0057, Validation loss: 3.8784, Duration: 1777.4867887496948
+Total time elapsed: 121986.55297660828
+Epoch: 69, Train loss: 3.0043, Validation loss: 3.8900, Duration: 1779.3018870353699
+Total time elapsed: 123765.85486364365
+Epoch: 70, Train loss: 3.0034, Validation loss: 3.8890, Duration: 1778.6494154930115
+Total time elapsed: 125544.50427913666
+Epoch: 71, Train loss: 3.0031, Validation loss: 3.8944, Duration: 1777.5183482170105
+Total time elapsed: 127322.02262735367
+Epoch: 72, Train loss: 3.0027, Validation loss: 3.9029, Duration: 1776.8865325450897
+Total time elapsed: 129098.90915989876
+Epoch: 73, Train loss: 3.0000, Validation loss: 3.9149, Duration: 1777.8750021457672
+Total time elapsed: 130876.78416204453
+Epoch: 74, Train loss: 3.0011, Validation loss: 3.9086, Duration: 1780.543220758438
+Total time elapsed: 132657.32738280296
+Epoch: 75, Train loss: 2.9980, Validation loss: 3.9226, Duration: 1778.4412186145782
+Total time elapsed: 134435.76860141754
+Epoch: 76, Train loss: 2.9968, Validation loss: 3.9254, Duration: 1779.7727644443512
+Total time elapsed: 136215.5413658619
+Epoch: 77, Train loss: 2.9959, Validation loss: 3.9266, Duration: 1780.5813827514648
+Total time elapsed: 137996.12274861336
+Epoch: 78, Train loss: 2.9955, Validation loss: 3.9326, Duration: 1780.413264989853
+Total time elapsed: 139776.5360136032
+Epoch: 79, Train loss: 2.9956, Validation loss: 3.9309, Duration: 1780.2748703956604
+Total time elapsed: 141556.81088399887
+Epoch: 80, Train loss: 2.9931, Validation loss: 3.9352, Duration: 1779.1477136611938
+Total time elapsed: 143335.95859766006
+Epoch: 81, Train loss: 2.9925, Validation loss: 3.9382, Duration: 1777.773808479309
+Total time elapsed: 145113.73240613937
+Epoch: 82, Train loss: 2.9914, Validation loss: 3.9440, Duration: 1780.216810464859
+Total time elapsed: 146893.94921660423
+Epoch: 83, Train loss: 2.9912, Validation loss: 3.9475, Duration: 1779.6358966827393
+Total time elapsed: 148673.58511328697
+Epoch: 84, Train loss: 2.9894, Validation loss: 3.9522, Duration: 1777.558761358261
+Total time elapsed: 150451.14387464523
+Epoch: 85, Train loss: 2.9892, Validation loss: 3.9554, Duration: 1791.924393415451
+Total time elapsed: 152243.06826806068
+Epoch: 86, Train loss: 2.9882, Validation loss: 3.9581, Duration: 1812.5079669952393
+Total time elapsed: 154055.57623505592
+Epoch: 87, Train loss: 2.9866, Validation loss: 3.9653, Duration: 1808.92409324646
+Total time elapsed: 155864.50032830238
+Epoch: 88, Train loss: 2.9866, Validation loss: 3.9649, Duration: 1808.1442880630493
+Total time elapsed: 157672.64461636543
+Epoch: 89, Train loss: 2.9862, Validation loss: 3.9655, Duration: 1812.5340480804443
+Total time elapsed: 159485.17866444588
+Epoch: 90, Train loss: 2.9847, Validation loss: 3.9697, Duration: 1803.5693137645721
+Total time elapsed: 161288.74797821045
+Epoch: 91, Train loss: 2.9840, Validation loss: 3.9718, Duration: 1799.6007373332977
+Total time elapsed: 163088.34871554375
+Epoch: 92, Train loss: 2.9834, Validation loss: 3.9770, Duration: 1800.3364932537079
+Total time elapsed: 164888.68520879745
+Epoch: 93, Train loss: 2.9837, Validation loss: 3.9807, Duration: 1797.83629322052
+Total time elapsed: 166686.52150201797
+Epoch: 94, Train loss: 2.9839, Validation loss: 3.9892, Duration: 1784.5594425201416
+Total time elapsed: 168471.08094453812
+Epoch: 95, Train loss: 2.9831, Validation loss: 3.9924, Duration: 1781.0499730110168
+Total time elapsed: 170252.13091754913
+Epoch: 96, Train loss: 2.9835, Validation loss: 3.9912, Duration: 1778.368593454361
+Total time elapsed: 172030.4995110035
+Epoch: 97, Train loss: 2.9823, Validation loss: 3.9899, Duration: 1778.6772992610931
+Total time elapsed: 173809.1768102646
+Epoch: 98, Train loss: 2.9851, Validation loss: 3.9965, Duration: 1793.7558023929596
+Total time elapsed: 175602.93261265755
+Epoch: 99, Train loss: 2.9830, Validation loss: 3.9957, Duration: 1800.3875608444214
+Total time elapsed: 177403.32017350197
+Epoch: 100, Train loss: 2.9845, Validation loss: 4.0051, Duration: 1800.9683096408844
+Total time elapsed: 179204.28848314285

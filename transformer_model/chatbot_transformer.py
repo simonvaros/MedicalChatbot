@@ -37,8 +37,8 @@ import os
 torch.manual_seed(0)
 # torch.use_deterministic_algorithms(True)
 
-# data_path = "./data/healthtap_1000_qa.csv"
-data_path = "./data/healthtap_full_qa_processed_30k_words.csv"
+# data_path = "./healthtap_1000_qa.csv"
+data_path = "./healthtap_full_qa_processed_20k_words.csv"
 
 medical_data = pd.read_csv(data_path)
 medical_data_questions = medical_data[['question']]
@@ -51,6 +51,8 @@ en_tokenizer = get_tokenizer('spacy', language='en_core_web_sm')
 print('Tokenizers set')
 print('Start building vocab')
 
+train = False
+
 def build_vocab(tokenizer):
     counter = Counter()
     for string_ in input_data:
@@ -60,10 +62,16 @@ def build_vocab(tokenizer):
     return Vocab(counter, specials=['<unk>', '<pad>', '<bos>', '<eos>'])
 
 
-vocab = build_vocab(en_tokenizer)
+if os.path.exists('vocab.pth'):
+    vocab = torch.load('vocab.pth')
+    print('vocab loaded')
+else:
+    vocab = build_vocab(en_tokenizer)
+    print('Vocab built')
+    torch.save(vocab, 'vocab.pth')
 
-print('Vocab built')
 print('Start processing data')
+
 
 def data_process():
     data = []
@@ -75,18 +83,25 @@ def data_process():
         data.append((question_tensor_, answer_tensor_))
     return data
 
+if train:
+    if os.path.exists('all_data.pth'):
+        all_data = torch.load('all_data.pth')
+        print('data loaded')
+    else:
+        all_data = data_process()
+        print('data processed')
+        torch.save(all_data, 'all_data.pth')
 
-all_data = data_process()
-random.shuffle(all_data)
-split_val = int(len(all_data) * 0.8)
-train_data = all_data[:split_val]
-val_data = all_data[split_val:]
+    random.shuffle(all_data)
+    split_val = int(len(all_data) * 0.8)
+    train_data = all_data[:split_val]
+    val_data = all_data[split_val:]
 
-print('Data processed')
+print('Data prepared')
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("Device is: " + str(device))
 
-BATCH_SIZE = 128
+BATCH_SIZE = 64
 PAD_IDX = vocab['<pad>']
 BOS_IDX = vocab['<bos>']
 EOS_IDX = vocab['<eos>']
@@ -95,7 +110,7 @@ EOS_IDX = vocab['<eos>']
 # DataLoader
 # ----------
 # 
-# The last torch specific feature we’ll use is the DataLoader, which is
+# The last torch specific feature well use is the DataLoader, which is
 # easy to use since it takes the data as its first argument. Specifically,
 # as the docs say: DataLoader combines a dataset and a sampler, and
 # provides an iterable over the given dataset. The DataLoader supports
@@ -111,24 +126,25 @@ EOS_IDX = vocab['<eos>']
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 
-print('Start preparing batches')
+if train:
+    print('Start preparing batches')
 
-def generate_batch(data_batch):
-    de_batch, en_batch = [], []
-    for (de_item, en_item) in data_batch:
-        de_batch.append(torch.cat([torch.tensor([BOS_IDX]), de_item, torch.tensor([EOS_IDX])], dim=0))
-        en_batch.append(torch.cat([torch.tensor([BOS_IDX]), en_item, torch.tensor([EOS_IDX])], dim=0))
-    de_batch = pad_sequence(de_batch, padding_value=PAD_IDX)
-    en_batch = pad_sequence(en_batch, padding_value=PAD_IDX)
-    return de_batch, en_batch
+    def generate_batch(data_batch):
+        de_batch, en_batch = [], []
+        for (de_item, en_item) in data_batch:
+            de_batch.append(torch.cat([torch.tensor([BOS_IDX]), de_item, torch.tensor([EOS_IDX])], dim=0))
+            en_batch.append(torch.cat([torch.tensor([BOS_IDX]), en_item, torch.tensor([EOS_IDX])], dim=0))
+        de_batch = pad_sequence(de_batch, padding_value=PAD_IDX)
+        en_batch = pad_sequence(en_batch, padding_value=PAD_IDX)
+        return de_batch, en_batch
 
 
-train_iter = DataLoader(train_data, batch_size=BATCH_SIZE,
-                        shuffle=True, collate_fn=generate_batch)
-valid_iter = DataLoader(val_data, batch_size=BATCH_SIZE,
-                        shuffle=True, collate_fn=generate_batch)
+    train_iter = DataLoader(train_data, batch_size=BATCH_SIZE,
+                            shuffle=True, collate_fn=generate_batch)
+    valid_iter = DataLoader(val_data, batch_size=BATCH_SIZE,
+                            shuffle=True, collate_fn=generate_batch)
 
-print('Batches generated')
+    print('Batches generated')
 
 ######################################################################
 # Transformer!
@@ -252,7 +268,7 @@ VOCAB_SIZE = len(vocab)
 EMB_SIZE = 512
 NHEAD = 8
 FFN_HID_DIM = 512
-BATCH_SIZE = 128
+BATCH_SIZE = 64
 NUM_ENCODER_LAYERS = 3
 NUM_DECODER_LAYERS = 3
 NUM_EPOCHS = 16
@@ -334,59 +350,37 @@ def evaluate(model, val_iter):
 # Train model 
 #
 
-print('Start training')
-
 directory = os.path.join("save", "checkpoint")
-if not os.path.exists(directory):
-    os.makedirs(directory)
 
-for epoch in range(1, NUM_EPOCHS + 1):
-    start_time = time.time()
-    train_loss = train_epoch(transformer, train_iter, optimizer)
-    end_time = time.time()
-    torch.save({
-        'epoch': epoch,
-        'en': transformer.transformer_encoder.state_dict(),
-        'de': transformer.transformer_decoder.state_dict(),
-        'opt': optimizer.state_dict(),
-        'voc_dict': vocab.__dict__,
-        'embedding': transformer.tok_emb.state_dict()
-    }, os.path.join(directory, '{}_{}.tar'.format(epoch, 'checkpoint')))
+if train:
+    print('Start training')
 
-    val_loss = evaluate(transformer, valid_iter)
-    print((f"Epoch: {epoch}, Train loss: {train_loss:.3f}, Val loss: {val_loss:.3f}, "
-           f"Epoch time = {(end_time - start_time):.3f}s"))
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
+    for epoch in range(1, NUM_EPOCHS + 1):
+        start_time = time.time()
+        train_loss = train_epoch(transformer, train_iter, optimizer)
+        end_time = time.time()
+        torch.save({
+            'epoch': epoch,
+            'en': transformer.transformer_encoder.state_dict(),
+            'de': transformer.transformer_decoder.state_dict(),
+            'opt': optimizer.state_dict(),
+            'voc_dict': vocab.__dict__,
+            'embedding': transformer.tok_emb.state_dict()
+        }, os.path.join(directory, '{}_{}.tar'.format(epoch, 'checkpoint')))
 
-######################################################################
-# We get the following results during model training.
-#
-# ::
-#
-#        Epoch: 1, Train loss: 5.316, Val loss: 4.065, Epoch time = 35.322s
-#        Epoch: 2, Train loss: 3.727, Val loss: 3.285, Epoch time = 36.283s
-#        Epoch: 3, Train loss: 3.131, Val loss: 2.881, Epoch time = 37.096s
-#        Epoch: 4, Train loss: 2.741, Val loss: 2.625, Epoch time = 37.714s
-#        Epoch: 5, Train loss: 2.454, Val loss: 2.428, Epoch time = 38.263s
-#        Epoch: 6, Train loss: 2.223, Val loss: 2.291, Epoch time = 38.415s
-#        Epoch: 7, Train loss: 2.030, Val loss: 2.191, Epoch time = 38.412s
-#        Epoch: 8, Train loss: 1.866, Val loss: 2.104, Epoch time = 38.511s
-#        Epoch: 9, Train loss: 1.724, Val loss: 2.044, Epoch time = 38.367s
-#        Epoch: 10, Train loss: 1.600, Val loss: 1.994, Epoch time = 38.491s
-#        Epoch: 11, Train loss: 1.488, Val loss: 1.969, Epoch time = 38.490s
-#        Epoch: 12, Train loss: 1.390, Val loss: 1.929, Epoch time = 38.194s
-#        Epoch: 13, Train loss: 1.299, Val loss: 1.898, Epoch time = 38.430s
-#        Epoch: 14, Train loss: 1.219, Val loss: 1.885, Epoch time = 38.406s
-#        Epoch: 15, Train loss: 1.141, Val loss: 1.890, Epoch time = 38.365s
-#        Epoch: 16, Train loss: 1.070, Val loss: 1.873, Epoch time = 38.439s
-#
-# The models trained using transformer architecture — train faster
-# and converge to a lower validation loss compared to RNN models.
+        val_loss = evaluate(transformer, valid_iter)
+        print((f"Epoch: {epoch}, Train loss: {train_loss:.3f}, Val loss: {val_loss:.3f}, "
+               f"Epoch time = {(end_time - start_time):.3f}s"))
 
-######################################################################
-#
-#
-
+checkpoint = torch.load(os.path.join(directory, '16_checkpoint.tar'), map_location=torch.device('cpu'))
+transformer.transformer_encoder.load_state_dict(checkpoint['en'])
+transformer.transformer_decoder.load_state_dict(checkpoint['de'])
+transformer.tok_emb.load_state_dict(checkpoint['embedding'])
+optimizer.load_state_dict(checkpoint['opt'])
+vocab.__dict__ = checkpoint['voc_dict']
 
 def greedy_decode(model, src, src_mask, max_len, start_symbol):
     src = src.to(device)

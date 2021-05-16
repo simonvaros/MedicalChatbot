@@ -69,9 +69,9 @@ def normalizeString(s):
 
 def readVocs():
     print("Reading lines...")
-    data2 = pd.read_csv(config.dataset_path)
-    data2 = data2[['question', 'answer']]
-    qa_pairs = data2.values.tolist()
+    data = pd.read_csv(config.dataset_path)
+    data = data[['question', 'answer']]
+    qa_pairs = data.values.tolist()
     voc = Voc()
     return voc, qa_pairs
 

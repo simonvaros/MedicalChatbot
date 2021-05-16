@@ -4,8 +4,8 @@ USE_CUDA = torch.cuda.is_available()
 device = torch.device("cuda" if USE_CUDA else "cpu")
 print(device)
 
-training = True
-evaluation = False
+training = False
+evaluation = True
 
 PAD_token = 0
 SOS_token = 1
@@ -26,8 +26,8 @@ decoder_n_layers = 2
 dropout = 0.1
 batch_size = 128
 
-# loadFilename = "./16_5000_checkpoint.tar"
-loadFilename = None
+loadFilename = "./16_5000_checkpoint.tar"
+# loadFilename = None
 checkpoint_iter = 4000
 
 clip = 50.0

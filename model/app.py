@@ -20,6 +20,7 @@ import flask
 from flask import request
 from flask_cors import CORS, cross_origin
 import time
+import pandas as pd
 
 save_dir = os.path.join("data", "save")
 voc, pairs = prepare_data.loadPrepareData()
@@ -113,7 +114,25 @@ if config.evaluation:
     searcher2 = BeamSearchDecoder(encoder, decoder)
     searcher3 = SamplingDecoder(encoder, decoder)
 
-    evaluation.evaluateInput(searcher, voc, searcher2=searcher2, searcher3=searcher3)
+    # evaluation.evaluateInput(searcher, voc, searcher2=searcher2, searcher3=searcher3)
+
+    test_data = pd.read_csv('../data/qd_test_data_processed.csv')
+    test_data = test_data[['question', 'answer']]
+    test_data_pairs = test_data.values.tolist()
+    test_data_pairs_count = len(test_data_pairs)
+
+    for i in range(test_data_pairs_count):
+        print('Processing ' + str(i + 1) + ' of: ' + str(test_data_pairs_count))
+
+        answer_gd = evaluation.generateAnswer(test_data_pairs[i][0], searcher, voc)
+        # answer_bs = evaluation.generateAnswer(test_data_pairs[i][0], searcher2, voc)
+        answer_sd = evaluation.generateAnswer(test_data_pairs[i][0], searcher3, voc)
+
+        test_data_pairs[i].append(answer_gd)
+        test_data_pairs[i].append("BEAM SEARCH EMPTY")
+        test_data_pairs[i].append(answer_sd)
+
+    pd.DataFrame(test_data_pairs).to_csv('./test_data_pairs.csv')
 
 
 app = flask.Flask(__name__)

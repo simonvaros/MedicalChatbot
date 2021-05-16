@@ -38,6 +38,9 @@ class BeamSearchDecoder(nn.Module):
         self.decoder = decoder
 
     def forward(self, input_seq, input_length, max_length):
+        self.encoder.eval()
+        self.decoder.eval()
+
         encoder_outputs, encoder_hidden = self.encoder(input_seq, input_length)
         decoder_hidden = encoder_hidden[:config.decoder_n_layers]
         decoder_input = torch.ones(1, 1, device=config.device, dtype=torch.long) * config.SOS_token
@@ -110,22 +113,27 @@ class GreedySearchDecoder(nn.Module):
         self.decoder = decoder
 
     def forward(self, input_seq, input_length, max_length):
+        self.encoder.eval()
+        self.decoder.eval()
+
         encoder_outputs, encoder_hidden = self.encoder(input_seq, input_length)
         decoder_hidden = encoder_hidden[:config.decoder_n_layers]
         decoder_input = torch.ones(1, 1, device=config.device, dtype=torch.long) * config.SOS_token
         all_tokens = torch.zeros([0], device=config.device, dtype=torch.long)
         all_scores = torch.zeros([0], device=config.device)
 
-        for _ in range(max_length):
-            decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden, encoder_outputs)
-            decoder_scores, decoder_input = torch.max(decoder_output, dim=1)
-            all_tokens = torch.cat((all_tokens, decoder_input), dim=0)
-            all_scores = torch.cat((all_scores, decoder_scores), dim=0)
+        with torch.no_grad():
+            for _ in range(max_length):
+                decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden, encoder_outputs)
+                decoder_scores, decoder_input = torch.max(decoder_output, dim=1)
+                all_tokens = torch.cat((all_tokens, decoder_input), dim=0)
+                all_scores = torch.cat((all_scores, decoder_scores), dim=0)
 
-            if (decoder_input == config.EOS_token):
-                break
-            
-            decoder_input = torch.unsqueeze(decoder_input, 0)
+                if (decoder_input == config.EOS_token):
+                    break
+
+                decoder_input = torch.unsqueeze(decoder_input, 0)
+
         return all_tokens, all_scores
 
 
@@ -146,29 +154,33 @@ class SamplingDecoder(nn.Module):
         self.decoder = decoder
 
     def forward(self, input_seq, input_length, max_length):
+        self.encoder.eval()
+        self.decoder.eval()
+
         encoder_outputs, encoder_hidden = self.encoder(input_seq, input_length)
         decoder_hidden = encoder_hidden[:config.decoder_n_layers]
         decoder_input = torch.ones(1, 1, device=config.device, dtype=torch.long) * config.SOS_token
         all_tokens = torch.zeros([0], device=config.device, dtype=torch.long)
 
-        for _ in range(max_length):
-            decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden, encoder_outputs)
+        with torch.no_grad():
+            for _ in range(max_length):
+                decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden, encoder_outputs)
 
-            temperature = 0.7
-            top_k = 5
+                temperature = 0.7
+                top_k = 5
 
-            decoder_output = decoder_output[-1] / temperature
-            filtered_output = top_k_filtering(decoder_output, top_k=top_k)
+                decoder_output = decoder_output[-1] / temperature
+                filtered_output = top_k_filtering(decoder_output, top_k=top_k)
 
-            probabilities = F.softmax(filtered_output, dim=-1)
-            decoder_input = torch.multinomial(probabilities, num_samples=1)
+                probabilities = F.softmax(filtered_output, dim=-1)
+                decoder_input = torch.multinomial(probabilities, num_samples=1)
 
-            all_tokens = torch.cat((all_tokens, decoder_input), dim=0)
+                all_tokens = torch.cat((all_tokens, decoder_input), dim=0)
 
-            if decoder_input == config.EOS_token:
-                break
+                if decoder_input == config.EOS_token:
+                    break
 
-            decoder_input = torch.unsqueeze(decoder_input, 0)
+                decoder_input = torch.unsqueeze(decoder_input, 0)
 
         return all_tokens
 
@@ -208,7 +220,7 @@ def evaluateInput(searcher, voc, searcher2=None, searcher3=None):
 
             if (searcher2 != None): 
                 output_words2 = evaluate(searcher2, voc, input_sentence)
-                output_words2[:] = [x for x in output_words2 if not (x == 'EOS' or x == 'PAD')]
+                output_words2[:] = [x for x in output_words2 if not (x == 'EOS' or x == 'PAD' or x == 'SOS')]
                 print('Bot (beam search):', ' '.join(output_words2))
 
             if (searcher3 != None):
@@ -224,7 +236,7 @@ def generateAnswer(question, searcher, voc):
         input_sentence = prepare_data.normalizeString(question)
         output_words = evaluate(searcher, voc, input_sentence)
 
-        output_words[:] = [x for x in output_words if not (x == 'EOS' or x == 'PAD')]
+        output_words[:] = [x for x in output_words if not (x == 'EOS' or x == 'PAD' or x == 'SOS')]
         return ' '.join(output_words)
 
     except KeyError:
