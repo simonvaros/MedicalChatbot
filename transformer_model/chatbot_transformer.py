@@ -37,7 +37,6 @@ import os
 torch.manual_seed(0)
 # torch.use_deterministic_algorithms(True)
 
-# data_path = "./healthtap_1000_qa.csv"
 data_path = "./healthtap_full_qa_processed_20k_words.csv"
 
 medical_data = pd.read_csv(data_path)
@@ -62,13 +61,9 @@ def build_vocab(tokenizer):
     return Vocab(counter, specials=['<unk>', '<pad>', '<bos>', '<eos>'])
 
 
-if os.path.exists('vocab.pth'):
-    vocab = torch.load('vocab.pth')
-    print('vocab loaded')
-else:
-    vocab = build_vocab(en_tokenizer)
-    print('Vocab built')
-    torch.save(vocab, 'vocab.pth')
+
+vocab = build_vocab(en_tokenizer)
+print('Vocab built')
 
 print('Start processing data')
 
@@ -84,13 +79,9 @@ def data_process():
     return data
 
 if train:
-    if os.path.exists('all_data.pth'):
-        all_data = torch.load('all_data.pth')
-        print('data loaded')
-    else:
-        all_data = data_process()
-        print('data processed')
-        torch.save(all_data, 'all_data.pth')
+
+    all_data = data_process()
+    print('data processed')
 
     random.shuffle(all_data)
     split_val = int(len(all_data) * 0.8)

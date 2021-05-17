@@ -11,8 +11,6 @@ from threading import Thread
 
 
 def main():
-
-
     URL_REGEX = "(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+"
     EMAIL_REGEX = "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*"
 
@@ -161,8 +159,7 @@ def main():
 
     pd.set_option('float_format', '{:f}'.format)
 
-    # data = pd.read_csv('./healthtap_full_qa.csv')
-    data = pd.read_csv('../../data/qd_data_qa.csv')
+    data = pd.read_csv('./healthtap_full_qa.csv')
     data = data[['question', 'answer']]
 
     print('data loaded - ' + str(len(data)) + ' records')
@@ -216,28 +213,26 @@ def main():
             else:
                 words[word] += 1
 
-    # words = dict(sorted(words.items(), key=lambda item: item[1]))
+    words = dict(sorted(words.items(), key=lambda item: item[1]))
 
     print('vocab done')
 
     qa_pairs_corrected = qa_pairs_processed
 
-    # bar.start()
-    # for i, pair in enumerate(qa_pairs_processed):
-    #     qa_pairs_corrected.append([spell_check(pair[0], words), spell_check(pair[1], words)])
-    #     bar.update(i+1)
-    # bar.finish()
+    bar.start()
+    for i, pair in enumerate(qa_pairs_processed):
+        qa_pairs_corrected.append([spell_check(pair[0], words), spell_check(pair[1], words)])
+        bar.update(i+1)
+    bar.finish()
 
-    # print('Number of question NA values ' + str(len(data[data['question'].isna()])))
-    # print('Number of answer NA values ' + str(len(data[data['answer'].isna()])))
+    print('Number of question NA values ' + str(len(data[data['question'].isna()])))
+    print('Number of answer NA values ' + str(len(data[data['answer'].isna()])))
 
-    # toto mi nefunguje neviem preco
-    # data.dropna(inplace=True)
+    data.dropna(inplace=True)
 
     data = pd.DataFrame(qa_pairs_corrected, columns=['question', 'answer'])
 
     # full_data_path = './healthtap_full_qa_processed.csv'
-    full_data_path = './test_data_processed.csv'
     data.to_csv(full_data_path)
 
     print('FULL DATASET SAVED TO ' + full_data_path)

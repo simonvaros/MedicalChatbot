@@ -1,5 +1,6 @@
 import pandas as pd
 import progressbar
+
 data = pd.read_csv("./healthtap_full_qa_processed_30k_words.csv")
 data = data[['question', 'answer']]
 data.dropna(inplace=True)

@@ -18,8 +18,8 @@ link.type = 'text/css'
 document.getElementsByTagName('head')[0].appendChild(link);
 
 var script = document.createElement('script');
-// script.src = '../build/simonvaros-webchat.js';
-script.src = 'http://localhost:4000/simonvaros-webchat.js';
+script.src = '../build/simonvaros-webchat.js';
+// script.src = 'http://localhost:4000/simonvaros-webchat.js';
 
 document.getElementsByTagName('body')[0].appendChild(script);
 
